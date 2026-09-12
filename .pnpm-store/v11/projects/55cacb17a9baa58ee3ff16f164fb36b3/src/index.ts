@@ -10,7 +10,7 @@ import type { Role } from "./types.js";
 
 const port = Number(process.env.PORT ?? 4000);
 const mongoUri =
-  process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017/visualarena";
+  process.env.MONGO_ATLAS ?? "mongodb://127.0.0.1:27017/visualarena";
 const clientOrigin = process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
 const app = express();
 app.use(cors({ origin: clientOrigin }));
