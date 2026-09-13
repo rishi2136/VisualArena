@@ -110,16 +110,20 @@ export default function YoutubePlayer({
 
   const seek = (time: number) => canControl && onAction("seek", time);
   return (
-    <section className="overflow-hidden rounded-2xl border border-[#38334d] bg-[#171328] shadow-2xl shadow-black/30">
-      <div className="relative aspect-video bg-black" ref={hostRef}>
+    <section className="player-card">
+      <div className="video-frame" ref={hostRef} />
+      <div className="player-controls" style={{ position: "relative" }}>
         {!canControl && (
           <div
-            className="absolute inset-0 z-10 cursor-not-allowed"
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              cursor: "not-allowed",
+            }}
             aria-hidden="true"
           />
         )}
-      </div>
-      <div className="p-4">
         <input
           aria-label="Video progress"
           type="range"
@@ -130,16 +134,16 @@ export default function YoutubePlayer({
           disabled={!canControl}
           onChange={(event) => seek(Number(event.target.value))}
         />
-        <div className="mt-3 flex items-center gap-2.5">
+        <div className="control-row">
           <button
-            className="rounded-lg bg-[#2a263d] px-3 py-2 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-45"
+            className="icon-button"
             disabled={!canControl}
             onClick={() => seek(Math.max(0, currentTime - 10))}
           >
             ↶ 10
           </button>
           <button
-            className="rounded-lg bg-[#9169f7] px-4 py-2 text-sm font-bold text-white hover:bg-[#a884ff] disabled:cursor-not-allowed disabled:opacity-45"
+            className="play-button"
             disabled={!canControl}
             onClick={() =>
               onAction(playback.playState === "playing" ? "pause" : "play")
@@ -148,19 +152,17 @@ export default function YoutubePlayer({
             {playback.playState === "playing" ? "❚❚ Pause" : "▶ Play"}
           </button>
           <button
-            className="rounded-lg bg-[#2a263d] px-3 py-2 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-45"
+            className="icon-button"
             disabled={!canControl}
             onClick={() => seek(currentTime + 10)}
           >
             10 ↷
           </button>
-          <span className="ml-1 text-sm text-[#beb9ca]">
+          <span className="time-readout">
             {displayTime(currentTime)} / {displayTime(duration)}
           </span>
           {!canControl && (
-            <span className="ml-auto text-xs text-[#aaa4b7]">
-              🔒 Host controls playback
-            </span>
+            <span className="locked">🔒 Host controls playback</span>
           )}
         </div>
       </div>

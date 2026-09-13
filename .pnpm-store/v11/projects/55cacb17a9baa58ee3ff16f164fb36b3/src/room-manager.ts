@@ -97,15 +97,12 @@ export class RoomManager {
     return this.publicRoom(room);
   }
 
-  async leaveRoom(socket: Socket, requireTransfer = false) {
+  async leaveRoom(socket: Socket) {
     const roomId = socket.data.roomId as string | undefined;
     if (!roomId) return;
     const room = this.rooms.get(roomId);
     if (!room) return;
     const participant = room.participants.get(socket.id);
-    if (requireTransfer && participant?.role === "host") {
-      throw new Error("Transfer host controls before leaving the room.");
-    }
     room.participants.delete(socket.id);
     socket.leave(roomId);
     delete socket.data.roomId;

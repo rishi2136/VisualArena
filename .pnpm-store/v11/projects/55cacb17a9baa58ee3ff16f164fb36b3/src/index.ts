@@ -141,7 +141,7 @@ io.on("connection", (socket) => {
       ),
     ),
   );
-  socket.on("leave_room", withAck(() => rooms.leaveRoom(socket, true)));
+  socket.on("leave_room", () => rooms.leaveRoom(socket));
   socket.on("disconnect", () => rooms.leaveRoom(socket));
 });
 
