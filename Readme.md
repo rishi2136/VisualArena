@@ -2,7 +2,7 @@
 
 VisualArena is a TypeScript MERN watch-party prototype. A host creates a room, shares its six-character room code or URL, and watches a YouTube video in sync with other people. Socket.IO broadcasts each authoritative playback update; MongoDB keeps each room and its last video state durable between active sessions.
 
-> Live URL: not deployed from this local workspace. Follow **Deploy to Render** below to publish it and replace this line with the public URL.
+Live: https://visualarena.onrender.com
 
 ## Features
 
@@ -20,18 +20,18 @@ VisualArena is a TypeScript MERN watch-party prototype. A host creates a room, s
 
 ## Stack
 
-| Layer | Technology |
-| --- | --- |
-| Client | React 19, TypeScript, Vite, YouTube IFrame API |
-| API | Node.js, Express 5, TypeScript, Zod |
-| Real time | Socket.IO |
-| Database | MongoDB with Mongoose |
+| Layer     | Technology                                     |
+| --------- | ---------------------------------------------- |
+| Client    | React 19, TypeScript, Vite, YouTube IFrame API |
+| API       | Node.js, Express 5, TypeScript, Zod            |
+| Real time | Socket.IO                                      |
+| Database  | MongoDB with Mongoose                          |
 
 ## Run locally
 
 ### Prerequisites
 
-- Node.js 20+ and pnpm (or npm)
+- Node.js 20+ and npm (or npm)
 - MongoDB Community Server running locally, or a MongoDB Atlas connection string
 
 ### 1. Configure environment variables
@@ -55,14 +55,14 @@ Open two terminals:
 
 ```powershell
 cd server
-pnpm install
-pnpm dev
+npm install
+npm dev
 ```
 
 ```powershell
 cd client
-pnpm install
-pnpm dev
+npm install
+npm dev
 ```
 
 Open `http://localhost:5173`. The API listens on `http://localhost:4000` by default and exposes `GET /api/health`.
@@ -89,13 +89,13 @@ React client ── REST POST /api/rooms ──> Express ──> MongoDB (room +
 
 ### Primary socket events
 
-| Event | Direction | Permission |
-| --- | --- | --- |
-| `join_room`, `leave_room` | client → server | anyone |
-| `play`, `pause`, `seek`, `change_video` | client → server | Host / Moderator |
-| `assign_role`, `remove_participant`, `transfer_host` | client → server | Host |
-| `sync_state`, `participants_updated`, `role_assigned` | server → clients | broadcast |
-| `send_message`, `chat_message` | both | room members |
+| Event                                                 | Direction        | Permission       |
+| ----------------------------------------------------- | ---------------- | ---------------- |
+| `join_room`, `leave_room`                             | client → server  | anyone           |
+| `play`, `pause`, `seek`, `change_video`               | client → server  | Host / Moderator |
+| `assign_role`, `remove_participant`, `transfer_host`  | client → server  | Host             |
+| `sync_state`, `participants_updated`, `role_assigned` | server → clients | broadcast        |
+| `send_message`, `chat_message`                        | both             | room members     |
 
 The socket acknowledgement format is `{ ok, data?, error? }`, allowing the UI to surface rejected actions cleanly.
 
@@ -104,8 +104,8 @@ The socket acknowledgement format is `{ ok, data?, error? }`, allowing the UI to
 The following checks have passed in this workspace:
 
 ```powershell
-cd server; pnpm run build
-cd ../client; pnpm run build
+cd server; npm run build
+cd ../client; npm run build
 ```
 
 ## Deploy to Render
@@ -114,17 +114,13 @@ Create a MongoDB Atlas database first and allow connections from Render. Then cr
 
 1. **Web Service (server)**
    - Root directory: `server`
-   - Build command: `pnpm install && pnpm run build`
-   - Start command: `pnpm start`
+   - Build command: `npm install && npm run build`
+   - Start command: `npm start`
    - Environment: `MONGODB_URI`, `PORT` (provided by Render), and `CLIENT_ORIGIN` set to the frontend URL.
 2. **Static Site (client)**
    - Root directory: `client`
-   - Build command: `pnpm install && pnpm run build`
+   - Build command: `npm install && npm run build`
    - Publish directory: `dist`
    - Environment: `VITE_API_URL` set to the server's HTTPS URL.
 
 After both deploys, update `CLIENT_ORIGIN` on the API, redeploy it, and put the resulting frontend URL at the top of this README. Socket.IO works on Render Web Services because it keeps long-lived WebSocket connections; do not deploy this socket server as a serverless function.
-
-## Scaling notes
-
-This prototype maintains live presence in one process, which is ideal for a local demo or one Web Service. To scale horizontally, add the Socket.IO Redis adapter and Redis Pub/Sub, store session/room metadata in MongoDB, enable sticky sessions at the load balancer, and persist/restore host identity more formally. The current creator-token behavior deliberately keeps the first host recovery path simple for a prototype.
